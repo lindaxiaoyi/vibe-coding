@@ -5,11 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Vibe Coding Night</title>
 <style>
+/* Artwork is authored at a fixed 800x541 and scaled to fit its container,
+   so it stays proportional at any size. Change --max-w to cap the size. */
+:root { --art-w: 800; --art-h: 541; --max-w: 800px; }
 html, body { margin: 0; padding: 0; background: #21212f; }
 body { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-/* Final display size 330x223; artwork authored at 800x541 and scaled by 0.4125. */
-.stage { width: 330px; height: 223px; overflow: hidden; }
-.stage > div { transform: scale(0.4125); transform-origin: 0 0; }
+
+.stage {
+  width: 100%;
+  max-width: var(--max-w);
+  aspect-ratio: var(--art-w) / var(--art-h);
+  overflow: hidden;
+}
+.stage > div { transform: scale(var(--s, 1)); transform-origin: 0 0; }
+
+/* Modern browsers size it with pure CSS; the script below is the fallback. */
+@supports (container-type: inline-size) {
+  .stage { container-type: inline-size; }
+  .stage > div { transform: scale(calc(100cqw / (var(--art-w) * 1px))); }
+}
 </style>
 <style>
 @keyframes typeline { 0% { width: 0; } 6% { width: var(--w); } 88% { width: var(--w); } 96%, 100% { width: 0; } }
@@ -155,5 +169,18 @@ body { margin: 0; background: #14141d; }
 </div>
 </div>
 </div>
+<script>
+// Fallback for browsers without container query units: keep --s in sync with width.
+(function () {
+  var stage = document.querySelector('.stage');
+  if (!stage || CSS.supports('width', '1cqw')) return;
+  function fit() {
+    stage.style.setProperty('--s', stage.clientWidth / 800);
+  }
+  fit();
+  (window.ResizeObserver ? new ResizeObserver(fit).observe(stage)
+                         : window.addEventListener('resize', fit));
+})();
+</script>
 </body>
 </html>
