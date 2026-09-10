@@ -7,7 +7,9 @@
 <style>
 html, body { margin: 0; padding: 0; background: #21212f; }
 body { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-.stage { width: 800px; height: 524px; max-width: 100%; }
+/* Final display size 330x223; artwork authored at 800x541 and scaled by 0.4125. */
+.stage { width: 330px; height: 223px; overflow: hidden; }
+.stage > div { transform: scale(0.4125); transform-origin: 0 0; }
 </style>
 <style>
 @keyframes typeline { 0% { width: 0; } 6% { width: var(--w); } 88% { width: var(--w); } 96%, 100% { width: 0; } }
@@ -26,7 +28,7 @@ body { margin: 0; background: #14141d; }
 </head>
 <body>
 <div class="stage">
-<div style="position: relative; width: 800px; height: 524px; overflow: hidden; background: linear-gradient(170deg, #2c2c3f 0%, #262636 55%, #21212f 100%); font-family: ui-monospace, 'SF Mono', Menlo, monospace; flex: none;">
+<div style="position: relative; width: 800px; height: 541px; overflow: hidden; background: linear-gradient(170deg, #2c2c3f 0%, #262636 55%, #21212f 100%); font-family: ui-monospace, 'SF Mono', Menlo, monospace; flex: none;">
 
   <div style="position: absolute; left: 20px; top: 70px; width: 74px; height: 96px; background: rgba(255,255,255,.035); transform: rotate(-4deg);"></div>
   <div style="position: absolute; left: 60px; top: 170px; width: 62px; height: 82px; background: rgba(255,255,255,.028); transform: rotate(3deg);"></div>
