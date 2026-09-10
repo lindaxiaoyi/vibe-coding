@@ -5,24 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Vibe Coding Night</title>
 <style>
-/* Artwork is authored at a fixed 800x541 and scaled to fit its container,
-   so it stays proportional at any size. Change --max-w to cap the size. */
-:root { --art-w: 800; --art-h: 541; --max-w: 800px; }
-html, body { margin: 0; padding: 0; background: #21212f; }
-body { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+/* Artwork is authored at a fixed 800x541 and scaled by script to fit
+   whatever box it is placed in (including a Framer embed iframe). */
+html, body { margin: 0; padding: 0; height: 100%; background: #21212f; overflow: hidden; }
+body { display: flex; align-items: center; justify-content: center; }
 
 .stage {
+  position: relative;
   width: 100%;
-  max-width: var(--max-w);
-  aspect-ratio: var(--art-w) / var(--art-h);
+  height: 100%;
   overflow: hidden;
 }
-.stage > div { transform: scale(var(--s, 1)); transform-origin: 0 0; }
-
-/* Modern browsers size it with pure CSS; the script below is the fallback. */
-@supports (container-type: inline-size) {
-  .stage { container-type: inline-size; }
-  .stage > div { transform: scale(calc(100cqw / (var(--art-w) * 1px))); }
+/* Centred by script; scale(0) until measured so no unscaled frame flashes. */
+.stage > div {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(var(--s, 0));
 }
 </style>
 <style>
@@ -170,16 +169,29 @@ body { margin: 0; background: #14141d; }
 </div>
 </div>
 <script>
-// Fallback for browsers without container query units: keep --s in sync with width.
+// Fit the fixed 800x541 artwork inside whatever box the page is given.
+// Done in script because CSS length division (100cqw / 800px) is not
+// supported everywhere -- notably it fails inside Framer.
 (function () {
+  var ART_W = 800, ART_H = 541;
   var stage = document.querySelector('.stage');
-  if (!stage || CSS.supports('width', '1cqw')) return;
+  var art = stage && stage.firstElementChild;
+  if (!art) return;
+
   function fit() {
-    stage.style.setProperty('--s', stage.clientWidth / 800);
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    // Contain: never crop, never distort.
+    art.style.setProperty('--s', Math.min(w / ART_W, h / ART_H));
   }
+
   fit();
-  (window.ResizeObserver ? new ResizeObserver(fit).observe(stage)
-                         : window.addEventListener('resize', fit));
+  if (window.ResizeObserver) {
+    new ResizeObserver(fit).observe(stage);
+  } else {
+    window.addEventListener('resize', fit);
+  }
+  window.addEventListener('load', fit);
 })();
 </script>
 </body>
